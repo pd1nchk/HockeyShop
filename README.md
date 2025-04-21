@@ -1,74 +1,39 @@
-# HockeyShop 🏒
+# HockeyShop
 
-Мобильное приложение для магазина хоккейной экипировки и аксессуаров.
+A modern Android application for browsing and purchasing hockey equipment.
 
-## О проекте
+## Features
 
-HockeyShop - это современное Android-приложение, разработанное для удобного просмотра и покупки хоккейной экипировки. Приложение предоставляет пользователям возможность просматривать широкий ассортимент товаров для хоккея, от клюшек и коньков до защитной экипировки и аксессуаров.
+- **User Authentication**: Login, registration, and logout functionality.
+- **Product Catalog**: Main screen with a list of hockey products.
+- **Product Details**: View detailed information about each product.
+- **Shopping Cart**: Add products to cart, view and manage cart contents.
+- **Checkout**: Place orders from the cart.
+- **Order Management**: View list of user orders and order details.
+- **User Profile**: View and manage user profile information.
+- **Admin Panel**: Admin interface for managing products and orders.
+- **Navigation**: Smooth navigation between all screens.
 
-## Функционал приложения
+## Technologies
 
-### Аутентификация и авторизация
-- Вход в систему (Login)
-- Регистрация новых пользователей (Register)
-- Восстановление пароля (Forgot Password)
-- Выход из системы (Logout)
+- Android (Kotlin)
+- Jetpack Compose
+- MVVM architecture
+- Hilt (DI)
 
-### Основной функционал
-- Главная страница с каталогом товаров (Home)
-- Детальная страница товара (Product Detail)
-- Корзина покупок (Cart)
-- Оформление заказа (Checkout)
-- Профиль пользователя (Profile)
+## Getting Started
 
-### Управление заказами
-- Просмотр списка заказов (Orders)
-- Детальная информация о заказе (Order Detail)
-- Отслеживание статуса заказа
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/pd1nchk/HockeyShop.git
+   ```
+2. Open the project in Android Studio.
+3. Sync Gradle and run the app.
 
-### Административный функционал
-- Панель администратора (Admin Panel)
-- Управление заказами (Admin Orders)
-- Просмотр деталей заказов
-- Управление товарами
-
-### Навигация
-- Удобная навигация между экранами
-- Возврат на предыдущий экран
-- Переход к корзине
-- Переход к профилю
-- Переход к заказам
-
-## Технологии
-
-- Android (Java/Kotlin)
-- Gradle
+## Requirements
 - Android Studio
-
-## Установка
-
-1. Клонируйте репозиторий:
-```bash
-git clone https://github.com/pd1nchk/HockeyShop.git
-```
-
-2. Откройте проект в Android Studio
-
-3. Синхронизируйте Gradle и запустите проект
-
-## Требования
-
-- Android Studio
-- JDK 11 или выше
+- JDK 11 or higher
 - Android SDK API 21+
 
-## Лицензия
-
+## License
 MIT License
-
-## Автор
-
-pd1nchk
-
----
-🏒 Разработано с любовью к хоккею
