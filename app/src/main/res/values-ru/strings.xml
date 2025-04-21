@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Хоккейный магазин</string>
+    
+    <!-- Common -->
+    <string name="ok">ОК</string>
+    <string name="cancel">Отмена</string>
+    <string name="save">Сохранить</string>
+    <string name="error">Ошибка</string>
+    <string name="success">Успешно</string>
+    <string name="loading">Загрузка…</string>
+    
+    <!-- Login Screen -->
+    <string name="login">Войти</string>
+    <string name="email">Email</string>
+    <string name="password">Пароль</string>
+    <string name="forgot_password">Забыли пароль?</string>
+    <string name="no_account">Нет аккаунта?</string>
+    <string name="register">Регистрация</string>
+    <string name="login_success">Вход выполнен успешно</string>
+    
+    <!-- Registration Screen -->
+    <string name="name">Имя</string>
+    <string name="confirm_password">Подтвердите пароль</string>
+    <string name="have_account">Уже есть аккаунт?</string>
+    <string name="register_success">Регистрация прошла успешно</string>
+    <string name="user_type">Тип пользователя</string>
+    <string name="admin">Администратор</string>
+    <string name="user">Покупатель</string>
+    
+    <!-- Home Screen -->
+    <string name="home">Главная</string>
+    <string name="search">Поиск</string>
+    <string name="popular">Популярное</string>
+    <string name="new_items">Новинки</string>
+    <string name="all_categories">Все категории</string>
+    <string name="all_products">Все товары</string>
+    <string name="sort_by">Сортировать по</string>
+    <string name="price_low_to_high">Цена: по возрастанию</string>
+    <string name="price_high_to_low">Цена: по убыванию</string>
+    <string name="popularity">Популярность</string>
+    
+    <!-- Product Categories -->
+    <string name="sticks">Клюшки</string>
+    <string name="skates">Коньки</string>
+    <string name="form">Форма</string>
+    <string name="equipment">Инвентарь</string>
+    
+    <!-- Product Details -->
+    <string name="add_to_cart">Добавить в корзину</string>
+    <string name="description">Описание</string>
+    <string name="reviews">Отзывы</string>
+    <string name="specs">Характеристики</string>
+    <string name="price">Цена</string>
+    <string name="discount">Скидка</string>
+    <string name="in_stock">В наличии</string>
+    <string name="out_of_stock">Нет в наличии</string>
+    <string name="quantity">Количество</string>
+    
+    <!-- Cart -->
+    <string name="cart">Корзина</string>
+    <string name="empty_cart">Ваша корзина пуста</string>
+    <string name="total">Итого</string>
+    <string name="checkout">Оформить заказ</string>
+    <string name="proceed_to_checkout">Оформить заказ</string>
+    <string name="remove">Удалить</string>
+    <string name="continue_shopping">Продолжить покупки</string>
+    
+    <!-- Checkout -->
+    <string name="shipping_address">Адрес доставки</string>
+    <string name="payment_method">Способ оплаты</string>
+    <string name="credit_card">Кредитная карта</string>
+    <string name="paypal">PayPal</string>
+    <string name="place_order">Разместить заказ</string>
+    <string name="order_success">Заказ успешно размещен</string>
+    
+    <!-- Profile -->
+    <string name="profile">Профиль</string>
+    <string name="orders">Заказы</string>
+    <string name="settings">Настройки</string>
+    <string name="logout">Выйти</string>
+    <string name="edit_profile">Редактировать профиль</string>
+    <string name="phone">Телефон</string>
+    <string name="address">Адрес</string>
+    <string name="change_password">Изменить пароль</string>
+    <string name="old_password">Старый пароль</string>
+    <string name="new_password">Новый пароль</string>
+    
+    <!-- Orders -->
+    <string name="order_details">Детали заказа</string>
+    <string name="order_number">Заказ №%1$s</string>
+    <string name="order_date">Дата: %1$s</string>
+    <string name="order_status">Статус: %1$s</string>
+    <string name="no_orders">У вас еще нет заказов</string>
+    
+    <!-- Order Status -->
+    <string name="status_pending">Ожидает обработки</string>
+    <string name="status_processing">Обрабатывается</string>
+    <string name="status_shipped">Отправлен</string>
+    <string name="status_delivered">Доставлен</string>
+    <string name="status_cancelled">Отменен</string>
+    
+    <!-- Admin Panel -->
+    <string name="admin_panel">Панель администратора</string>
+    <string name="manage_products">Управление товарами</string>
+    <string name="manage_categories">Управление категориями</string>
+    <string name="manage_orders">Управление заказами</string>
+    <string name="manage_users">Управление пользователями</string>
+    <string name="back">Назад</string>
+    <string name="add_product">Добавить товар</string>
+    <string name="edit_product">Редактировать товар</string>
+    <string name="delete_product">Удалить товар</string>
+    <string name="add_category">Добавить категорию</string>
+    <string name="edit_category">Редактировать категорию</string>
+    <string name="delete_category">Удалить категорию</string>
+    <string name="delete_confirmation">Вы уверены, что хотите удалить этот товар?</string>
+    <string name="yes">Да</string>
+    <string name="no">Нет</string>
+</resources> 
