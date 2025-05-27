@@ -12,11 +12,15 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Remove
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -38,7 +42,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -53,8 +56,10 @@ import com.podolyanchik.hockeyshop.domain.model.Product
 import com.podolyanchik.hockeyshop.presentation.component.ErrorDialog
 import com.podolyanchik.hockeyshop.presentation.component.HockeyShopButton
 import com.podolyanchik.hockeyshop.presentation.viewmodel.ProductViewModel
+import com.podolyanchik.hockeyshop.presentation.viewmodel.ProfileViewModel
 import com.podolyanchik.hockeyshop.presentation.viewmodel.SharedCartViewModel
 import com.podolyanchik.hockeyshop.util.Resource
+import coil.compose.AsyncImage
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -63,16 +68,29 @@ fun ProductDetailScreen(
     onNavigateBack: () -> Unit,
     onAddToCart: (String) -> Unit,
     viewModel: ProductViewModel = hiltViewModel(),
-    sharedCartViewModel: SharedCartViewModel = hiltViewModel()
+    sharedCartViewModel: SharedCartViewModel = hiltViewModel(),
+    profileViewModel: ProfileViewModel = hiltViewModel()
 ) {
     val productState by viewModel.productState.collectAsStateWithLifecycle()
     val isInCart by viewModel.isInCart.collectAsStateWithLifecycle()
+    val currentUser by profileViewModel.currentUser.collectAsStateWithLifecycle()
+    
+    // Определяем, является ли пользователь администратором
+    val isAdmin = currentUser?.role?.name == "ADMIN"
     
     var showErrorDialog by remember { mutableStateOf(false) }
     var errorMessage by remember { mutableStateOf("") }
     
     LaunchedEffect(productId) {
         viewModel.fetchProductDetails(productId)
+    }
+    
+    // Monitor for error state
+    LaunchedEffect(productState) {
+        if (productState is Resource.Error) {
+            errorMessage = (productState as Resource.Error).message ?: "Произошла ошибка"
+            showErrorDialog = true
+        }
     }
     
     Scaffold(
@@ -115,8 +133,9 @@ fun ProductDetailScreen(
                         ProductDetailContent(
                             product = product,
                             isInCart = isInCart,
-                            onAddToCart = { 
-                                sharedCartViewModel.addToCart(product)
+                            isAdmin = isAdmin,
+                            onAddToCart = { quantity -> 
+                                viewModel.addToCartAndUpdateStock(product, quantity)
                                 onAddToCart(productId) 
                             }
                         )
@@ -135,26 +154,20 @@ fun ProductDetailScreen(
                     }
                 }
                 is Resource.Error -> {
-                    val error = (productState as Resource.Error<Product>).message ?: "Unknown error"
-                    errorMessage = error
-                    showErrorDialog = true
-                    
+                    // Error message already shown in dialog
                     Box(
                         modifier = Modifier.fillMaxSize(),
                         contentAlignment = Alignment.Center
                     ) {
                         Text(
-                            text = "Error loading product: $error",
-                            style = MaterialTheme.typography.bodyLarge,
-                            color = MaterialTheme.colorScheme.error,
+                            text = (productState as Resource.Error).message ?: "Неизвестная ошибка",
+                            style = MaterialTheme.typography.titleLarge,
                             textAlign = TextAlign.Center,
-                            modifier = Modifier.padding(16.dp)
+                            color = MaterialTheme.colorScheme.error
                         )
                     }
                 }
-                else -> {
-                    // Initial state, nothing to show yet
-                }
+                else -> { /* Initial state, do nothing */ }
             }
             
             if (showErrorDialog) {
@@ -174,8 +187,11 @@ fun ProductDetailScreen(
 fun ProductDetailContent(
     product: Product,
     isInCart: Boolean,
-    onAddToCart: () -> Unit
+    isAdmin: Boolean,
+    onAddToCart: (Int) -> Unit
 ) {
+    var quantity by remember { mutableStateOf(1) }
+    
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -195,20 +211,13 @@ fun ProductDetailContent(
                 contentAlignment = Alignment.Center
             ) {
                 if (product.imageUrl.isNotEmpty()) {
-                    // In a real app, load image from URL using Coil or Glide
-                    // For now, just show a placeholder
-                    Box(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .background(MaterialTheme.colorScheme.surfaceVariant),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Text(
-                            text = product.name.first().toString(),
-                            style = MaterialTheme.typography.displayLarge,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-                    }
+                    // Используем обычный AsyncImage с аргументами, подходящими для Coil 2.5.0
+                    AsyncImage(
+                        model = product.imageUrl,
+                        contentDescription = product.name,
+                        modifier = Modifier.fillMaxSize(),
+                        contentScale = ContentScale.Crop
+                    )
                 } else {
                     // Fallback to placeholder image
                     Image(
@@ -242,8 +251,17 @@ fun ProductDetailContent(
         
         Spacer(modifier = Modifier.height(8.dp))
         
-        // Price with Discount
-        if (product.discount > 0) {
+        // Price with Discount or Out of Stock message
+        if (product.quantity <= 0) {
+            // Out of stock message
+            Text(
+                text = stringResource(R.string.out_of_stock_message),
+                style = MaterialTheme.typography.titleLarge.copy(
+                    color = MaterialTheme.colorScheme.error,
+                    fontWeight = FontWeight.Bold
+                )
+            )
+        } else if (product.discount > 0) {
             Row(
                 verticalAlignment = Alignment.CenterVertically
             ) {
@@ -318,28 +336,119 @@ fun ProductDetailContent(
             SpecificationRow(stringResource(R.string.discount), "${product.discount.toInt()}%")
         }
         
-        SpecificationRow(
-            stringResource(if (product.quantity > 0) R.string.in_stock else R.string.out_of_stock), 
-            product.quantity.toString()
-        )
-        
-        SpecificationRow(stringResource(R.string.quantity), product.quantity.toString())
-        
-        Spacer(modifier = Modifier.height(24.dp))
-        
-        // Add to Cart Button
-        val buttonText = if (isInCart) {
-            stringResource(R.string.already_in_cart)
-        } else {
-            stringResource(R.string.add_to_cart)
+        // Stock status with different colors
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 4.dp),
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Text(
+                text = stringResource(if (product.quantity > 0) R.string.in_stock else R.string.out_of_stock),
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+            Text(
+                text = if (product.quantity > 0) product.quantity.toString() else "0",
+                style = MaterialTheme.typography.bodyMedium,
+                fontWeight = FontWeight.Medium,
+                color = if (product.quantity > 0) 
+                    MaterialTheme.colorScheme.primary 
+                else 
+                    MaterialTheme.colorScheme.error
+            )
         }
         
-        HockeyShopButton(
-            text = buttonText,
-            onClick = { if (!isInCart) onAddToCart() },
-            enabled = !isInCart && product.quantity > 0,
-            modifier = Modifier.fillMaxWidth()
-        )
+        Spacer(modifier = Modifier.height(16.dp))
+        
+        // Quantity selector и кнопка "Добавить в корзину" - только для обычных пользователей
+        if (!isAdmin) {
+            if (product.quantity > 0 && !isInCart) {
+                Text(
+                    text = stringResource(R.string.quantity),
+                    style = MaterialTheme.typography.titleMedium.copy(
+                        fontWeight = FontWeight.Bold
+                    )
+                )
+                
+                Spacer(modifier = Modifier.height(8.dp))
+                
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    IconButton(
+                        onClick = { if (quantity > 1) quantity-- },
+                        modifier = Modifier
+                            .size(36.dp)
+                            .background(
+                                color = MaterialTheme.colorScheme.secondaryContainer,
+                                shape = CircleShape
+                            )
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Remove,
+                            contentDescription = stringResource(R.string.decrease_quantity),
+                            tint = MaterialTheme.colorScheme.onSecondaryContainer
+                        )
+                    }
+                    
+                    Text(
+                        text = quantity.toString(),
+                        style = MaterialTheme.typography.titleLarge,
+                        modifier = Modifier
+                            .width(48.dp)
+                            .padding(horizontal = 8.dp),
+                        textAlign = TextAlign.Center
+                    )
+                    
+                    IconButton(
+                        onClick = { if (quantity < product.quantity) quantity++ },
+                        modifier = Modifier
+                            .size(36.dp)
+                            .background(
+                                color = MaterialTheme.colorScheme.primaryContainer,
+                                shape = CircleShape
+                            )
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Add,
+                            contentDescription = stringResource(R.string.increase_quantity),
+                            tint = MaterialTheme.colorScheme.onPrimaryContainer
+                        )
+                    }
+                    
+                    Spacer(modifier = Modifier.width(16.dp))
+                    
+                    Text(
+                        text = stringResource(R.string.item_total, "$${String.format("%.2f", product.finalPrice * quantity)}"),
+                        style = MaterialTheme.typography.bodyLarge,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier.weight(1f),
+                        textAlign = TextAlign.End
+                    )
+                }
+                
+                Spacer(modifier = Modifier.height(16.dp))
+            }
+
+            // Add to Cart Button для обычного пользователя
+            val buttonText = if (isInCart) {
+                stringResource(R.string.already_in_cart)
+            } else {
+                stringResource(R.string.add_to_cart)
+            }
+            
+            HockeyShopButton(
+                text = buttonText,
+                onClick = { if (!isInCart) onAddToCart(quantity) },
+                enabled = !isInCart && product.quantity > 0,
+                modifier = Modifier.fillMaxWidth()
+            )
+        }
+        // Для админа никаких кнопок не отображаем
     }
 }
 

@@ -34,6 +34,11 @@ interface CartRepository {
     suspend fun addToCart(product: Product, quantity: Int = 1): Resource<Unit>
     
     /**
+     * Add a product to the cart by its ID
+     */
+    suspend fun addToCartById(productId: String, quantity: Int = 1): Resource<Unit>
+    
+    /**
      * Update the quantity of a product in the cart
      */
     suspend fun updateQuantity(product: Product, quantity: Int): Resource<Unit>

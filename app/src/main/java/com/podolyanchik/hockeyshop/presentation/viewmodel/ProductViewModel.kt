@@ -48,6 +48,52 @@ class ProductViewModel @Inject constructor(
     }
 
     /**
+     * Adds the product to cart and decreases its stock quantity
+     */
+    fun addToCartAndUpdateStock(product: Product, quantity: Int = 1) {
+        viewModelScope.launch {
+            // Only proceed if product is in stock
+            if (product.quantity <= 0) {
+                _productState.value = Resource.Error("Товар отсутствует на складе")
+                return@launch
+            }
+            
+            // Check if there's enough quantity
+            if (product.quantity < quantity) {
+                _productState.value = Resource.Error("Недостаточное количество товара на складе")
+                return@launch
+            }
+            
+            // First add to cart
+            val addToCartResult = cartRepository.addToCart(product, quantity)
+            if (addToCartResult is Resource.Error) {
+                _productState.value = Resource.Error(addToCartResult.message ?: "Ошибка при добавлении в корзину")
+                return@launch
+            }
+            
+            // Then decrease product stock
+            val decreaseStockResult = productRepository.decreaseProductQuantity(product.id, quantity)
+            if (decreaseStockResult is Resource.Error) {
+                _productState.value = Resource.Error(decreaseStockResult.message ?: "Ошибка при обновлении остатков")
+                return@launch
+            }
+            
+            // Update local state to reflect the new stock level
+            if (_productState.value is Resource.Success) {
+                val currentProduct = (_productState.value as Resource.Success<Product>).data
+                currentProduct?.let {
+                    // Create new product with updated quantity
+                    val updatedProduct = it.copy(quantity = it.quantity - quantity)
+                    _productState.value = Resource.Success(updatedProduct)
+                }
+            }
+            
+            // Update isInCart state
+            _isInCart.value = true
+        }
+    }
+
+    /**
      * Clears error state
      */
     fun clearError() {

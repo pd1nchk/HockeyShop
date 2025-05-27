@@ -1,6 +1,7 @@
 package com.podolyanchik.hockeyshop.data.repository
 
 import com.podolyanchik.hockeyshop.data.local.dao.CartDao
+import com.podolyanchik.hockeyshop.data.local.dao.ProductDao
 import com.podolyanchik.hockeyshop.data.local.dao.UserDao
 import com.podolyanchik.hockeyshop.data.local.entity.CartEntity
 import com.podolyanchik.hockeyshop.data.mapper.toProduct
@@ -19,7 +20,8 @@ import javax.inject.Singleton
 @Singleton
 class CartRepositoryImpl @Inject constructor(
     private val cartDao: CartDao,
-    private val userDao: UserDao
+    private val userDao: UserDao,
+    private val productDao: ProductDao
 ) : CartRepository {
 
     override fun getCartItems(): Flow<Resource<Map<Product, Int>>> = flow {
@@ -88,6 +90,32 @@ class CartRepositoryImpl @Inject constructor(
                 productId = product.id,
                 quantity = quantity
             )
+            cartDao.addCartItem(cartItem)
+            Resource.Success(Unit)
+        } catch (e: Exception) {
+            Resource.Error("Failed to add to cart: ${e.message}")
+        }
+    }
+
+    override suspend fun addToCartById(productId: String, quantity: Int): Resource<Unit> {
+        return try {
+            val currentUser = userDao.getCurrentUser() ?: throw Exception("User not logged in")
+            
+            // Проверяем, существует ли товар
+            val product = productDao.getProductById(productId) ?: throw Exception("Product not found")
+            
+            // Проверяем, достаточно ли товара на складе
+            if (product.quantity < quantity) {
+                return Resource.Error("Not enough product in stock")
+            }
+            
+            // Создаем элемент корзины
+            val cartItem = CartEntity(
+                userId = currentUser.userId,
+                productId = productId,
+                quantity = quantity
+            )
+            
             cartDao.addCartItem(cartItem)
             Resource.Success(Unit)
         } catch (e: Exception) {

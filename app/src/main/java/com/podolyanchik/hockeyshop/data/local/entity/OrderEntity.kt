@@ -20,9 +20,15 @@ import androidx.room.PrimaryKey
 data class OrderEntity(
     @PrimaryKey val id: String,
     val userId: String,
-    val status: String, // PENDING, PROCESSING, SHIPPED, DELIVERED, CANCELLED
+    val userName: String,
+    val userEmail: String,
+    val userPhone: String? = null,
+    val userAddress: String? = null,
+    val status: String, // "ACTIVE" or "COMPLETED"
     val total: Double,
+    val shippingCost: Double = 0.0,
     val createdAt: Long = System.currentTimeMillis(),
+    val completedAt: Long? = null,
     val deliveryAddress: String,
     val paymentMethod: String
 ) 

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Хоккейный магазин</string>
+    <string name="app_name">Hockey Shop</string>
     
     <!-- Common -->
     <string name="ok">ОК</string>
@@ -9,6 +9,8 @@
     <string name="error">Ошибка</string>
     <string name="success">Успешно</string>
     <string name="loading">Загрузка…</string>
+    <string name="back">Назад</string>
+    <string name="clear">Очистить</string>
     
     <!-- Login Screen -->
     <string name="login">Войти</string>
@@ -34,11 +36,24 @@
     <string name="popular">Популярное</string>
     <string name="new_items">Новинки</string>
     <string name="all_categories">Все категории</string>
+    <string name="all_category_item">Все</string>
     <string name="all_products">Все товары</string>
     <string name="sort_by">Сортировать по</string>
     <string name="price_low_to_high">Цена: по возрастанию</string>
     <string name="price_high_to_low">Цена: по убыванию</string>
     <string name="popularity">Популярность</string>
+    <string name="no_categories_found">Категории не найдены</string>
+    <string name="no_popular_found">Популярные товары не найдены</string>
+    <string name="no_products_found">Товары не найдены</string>
+    <string name="name_a_z">Название: А-Я</string>
+    <string name="name_z_a">Название: Я-А</string>
+    <string name="discount_low_to_high">Скидка: по возрастанию</string>
+    <string name="discount_high_to_low">Скидка: по убыванию</string>
+    <string name="no_sorting">Без сортировки</string>
+    <string name="search_products">Поиск товаров</string>
+    <string name="search_results">Результаты поиска</string>
+    <string name="no_search_results">По вашему запросу ничего не найдено</string>
+    <string name="find_products">Найти товары</string>
     
     <!-- Product Categories -->
     <string name="sticks">Клюшки</string>
@@ -47,7 +62,9 @@
     <string name="equipment">Инвентарь</string>
     
     <!-- Product Details -->
+    <string name="product_details">Детали товара</string>
     <string name="add_to_cart">Добавить в корзину</string>
+    <string name="view_product">Просмотр товара</string>
     <string name="description">Описание</string>
     <string name="reviews">Отзывы</string>
     <string name="specs">Характеристики</string>
@@ -56,23 +73,67 @@
     <string name="in_stock">В наличии</string>
     <string name="out_of_stock">Нет в наличии</string>
     <string name="quantity">Количество</string>
+    <string name="brand">Бренд</string>
+    <string name="weight">Вес</string>
+    <string name="dimensions">Размеры</string>
+    <string name="material">Материал</string>
+    <string name="added_to_cart">Товар добавлен в корзину</string>
+    <string name="already_in_cart">Товар уже в корзине</string>
     
     <!-- Cart -->
     <string name="cart">Корзина</string>
     <string name="empty_cart">Ваша корзина пуста</string>
     <string name="total">Итого</string>
-    <string name="checkout">Оформить заказ</string>
+    <string name="checkout">Оформление заказа</string>
     <string name="proceed_to_checkout">Оформить заказ</string>
     <string name="remove">Удалить</string>
     <string name="continue_shopping">Продолжить покупки</string>
+    <string name="order_summary">Сводка заказа</string>
+    <string name="order_history">История заказов</string>
+    <string name="all_orders">Все заказы</string>
+    <string name="active_orders">Активные заказы</string>
+    <string name="completed_orders">Выполненные заказы</string>
+    <string name="no_active_orders">Нет активных заказов</string>
+    <string name="no_completed_orders">Нет выполненных заказов</string>
+    <string name="details_order">Детали заказа</string>
+    <string name="order_number">Заказ №%s</string>
+    <string name="created_on">Создан: %s</string>
+    <string name="completed_on">Выполнен: %s</string>
+    <string name="status_active">Активный</string>
+    <string name="status_completed">Выполнен</string>
+    <string name="complete_order">Завершить заказ</string>
+    <string name="complete_order_title">Завершить заказ?</string>
+    <string name="complete_order_message">Вы уверены, что хотите отметить этот заказ как выполненный?</string>
+    <string name="complete">Завершить</string>
+    <string name="customer_information">Информация о клиенте</string>
+    <string name="customer_name">Имя: %s</string>
+    <string name="customer_email">Email: %s</string>
+    <string name="customer_phone">Телефон: %s</string>
+    <string name="shipping_address">Адрес: %s</string>
+    <string name="order_items">Позиции заказа</string>
+    <string name="items_count">Товаров: %d</string>
+    <string name="quantity_value">Количество: %d</string>
+    <string name="order_not_found">Заказ не найден</string>
+    <string name="order_success_message">Заказ успешно оформлен!</string>
+    <string name="subtotal">Подытог</string>
+    <string name="shipping">Доставка</string>
+    <string name="increase_quantity">Увеличить количество</string>
+    <string name="decrease_quantity">Уменьшить количество</string>
+    <string name="remove_item">Удалить товар</string>
+    <string name="profile_incomplete_title">Профиль не заполнен</string>
+    <string name="profile_incomplete_message">Для оформления заказа необходимо заполнить адрес доставки и способ оплаты в вашем профиле.</string>
+    <string name="go_to_profile">Перейти в профиль</string>
+    <string name="out_of_stock_message">Нет в наличии</string>
+    <string name="low_stock_message">Осталось мало: %1$d</string>
     
     <!-- Checkout -->
-    <string name="shipping_address">Адрес доставки</string>
+    <string name="delivery_address">Адрес доставки</string>
     <string name="payment_method">Способ оплаты</string>
     <string name="credit_card">Кредитная карта</string>
     <string name="paypal">PayPal</string>
-    <string name="place_order">Разместить заказ</string>
-    <string name="order_success">Заказ успешно размещен</string>
+    <string name="cash_on_delivery">Наличные курьеру</string>
+    <string name="place_order">Оформить заказ</string>
+    <string name="order_success">Заказ успешно оформлен</string>
     
     <!-- Profile -->
     <string name="profile">Профиль</string>
@@ -87,8 +148,6 @@
     <string name="new_password">Новый пароль</string>
     
     <!-- Orders -->
-    <string name="order_details">Детали заказа</string>
-    <string name="order_number">Заказ №%1$s</string>
     <string name="order_date">Дата: %1$s</string>
     <string name="order_status">Статус: %1$s</string>
     <string name="no_orders">У вас еще нет заказов</string>
@@ -106,7 +165,6 @@
     <string name="manage_categories">Управление категориями</string>
     <string name="manage_orders">Управление заказами</string>
     <string name="manage_users">Управление пользователями</string>
-    <string name="back">Назад</string>
     <string name="add_product">Добавить товар</string>
     <string name="edit_product">Редактировать товар</string>
     <string name="delete_product">Удалить товар</string>
@@ -116,4 +174,20 @@
     <string name="delete_confirmation">Вы уверены, что хотите удалить этот товар?</string>
     <string name="yes">Да</string>
     <string name="no">Нет</string>
+    
+    <!-- Product Form -->
+    <string name="product_name">Название товара</string>
+    <string name="product_description">Описание</string>
+    <string name="product_price">Цена ($)</string>
+    <string name="product_quantity">Количество</string>
+    <string name="product_discount">Скидка (%)</string>
+    <string name="product_image_url">URL изображения</string>
+    <string name="product_category">Категория</string>
+    <string name="product_popular">Популярный товар</string>
+    <string name="product_new">Новый товар</string>
+    <string name="select_category">Выберите категорию</string>
+    <string name="image_url_hint">Введите URL изображения. Поддерживаются URL с параметрами запроса.</string>
+    <string name="item_total">Итого: %s</string>
+    <string name="price_with_discount" formatted="false">$%.2f (скидка %d%%) $%.2f</string>
+    <string name="price_format">$%.2f</string>
 </resources> 

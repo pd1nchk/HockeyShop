@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -17,6 +18,7 @@ import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Remove
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Divider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -26,9 +28,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.res.stringResource
+import coil.compose.AsyncImage
+import com.podolyanchik.hockeyshop.R
 import com.podolyanchik.hockeyshop.domain.model.Product
 
 @Composable
@@ -52,19 +58,34 @@ fun CartItemRow(
                 .padding(12.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            // Product image placeholder
+            // Product image from URL
             Box(
                 modifier = Modifier
                     .size(70.dp)
-                    .clip(RoundedCornerShape(8.dp))
-                    .background(MaterialTheme.colorScheme.surfaceVariant),
+                    .clip(RoundedCornerShape(8.dp)),
                 contentAlignment = Alignment.Center
             ) {
-                Text(
-                    text = product.name.first().toString(),
-                    style = MaterialTheme.typography.headlineMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
+                if (product.imageUrl.isNotEmpty()) {
+                    AsyncImage(
+                        model = product.imageUrl,
+                        contentDescription = product.name,
+                        modifier = Modifier.fillMaxSize(),
+                        contentScale = ContentScale.Crop
+                    )
+                } else {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .background(MaterialTheme.colorScheme.surfaceVariant),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            text = product.name.first().toString(),
+                            style = MaterialTheme.typography.headlineMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                }
             }
             
             Spacer(modifier = Modifier.width(16.dp))
@@ -118,7 +139,7 @@ fun CartItemRow(
                 }
                 
                 Text(
-                    text = "Total: $${String.format("%.2f", itemTotal)}",
+                    text = stringResource(R.string.item_total, "$${String.format("%.2f", itemTotal)}"),
                     style = MaterialTheme.typography.bodyMedium,
                     fontWeight = FontWeight.Medium
                 )
@@ -136,7 +157,7 @@ fun CartItemRow(
                 ) {
                     Icon(
                         imageVector = Icons.Default.Add,
-                        contentDescription = "Increase quantity",
+                        contentDescription = stringResource(R.string.increase_quantity),
                         tint = MaterialTheme.colorScheme.primary
                     )
                 }
@@ -154,7 +175,7 @@ fun CartItemRow(
                 ) {
                     Icon(
                         imageVector = Icons.Default.Remove,
-                        contentDescription = "Decrease quantity",
+                        contentDescription = stringResource(R.string.decrease_quantity),
                         tint = if (quantity > 1) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.3f)
                     )
                 }
@@ -168,7 +189,7 @@ fun CartItemRow(
             ) {
                 Icon(
                     imageVector = Icons.Default.Delete,
-                    contentDescription = "Remove item",
+                    contentDescription = stringResource(R.string.remove_item),
                     tint = MaterialTheme.colorScheme.error
                 )
             }

@@ -27,7 +27,7 @@ import com.podolyanchik.hockeyshop.data.local.entity.UserEntity
         OrderItemEntity::class,
         CurrentUserEntity::class
     ],
-    version = 1,
+    version = 2,
     exportSchema = false
 )
 @TypeConverters(Converters::class)

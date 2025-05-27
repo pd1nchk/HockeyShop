@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.podolyanchik.hockeyshop.domain.model.Product
 import com.podolyanchik.hockeyshop.domain.repository.CartRepository
+import com.podolyanchik.hockeyshop.domain.repository.ProductRepository
 import com.podolyanchik.hockeyshop.util.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -20,7 +21,8 @@ import javax.inject.Inject
  */
 @HiltViewModel
 class SharedCartViewModel @Inject constructor(
-    private val cartRepository: CartRepository
+    private val cartRepository: CartRepository,
+    private val productRepository: ProductRepository
 ) : ViewModel() {
 
     // Cart items with quantities
@@ -90,6 +92,19 @@ class SharedCartViewModel @Inject constructor(
     }
     
     /**
+     * Add item to cart by product id
+     */
+    fun addToCart(productId: String, quantity: Int = 1) {
+        viewModelScope.launch {
+            val result = cartRepository.addToCartById(productId, quantity)
+            
+            if (result is Resource.Error) {
+                _error.value = result.message
+            }
+        }
+    }
+    
+    /**
      * Add item to cart
      */
     fun addToCart(product: Product) {
@@ -128,6 +143,19 @@ class SharedCartViewModel @Inject constructor(
         
         viewModelScope.launch {
             val result = cartRepository.updateQuantity(product, quantity)
+            
+            if (result is Resource.Error) {
+                _error.value = result.message
+            }
+        }
+    }
+    
+    /**
+     * Decrease product stock quantity
+     */
+    fun decreaseProductStock(productId: String, quantity: Int) {
+        viewModelScope.launch {
+            val result = productRepository.decreaseProductQuantity(productId, quantity)
             
             if (result is Resource.Error) {
                 _error.value = result.message

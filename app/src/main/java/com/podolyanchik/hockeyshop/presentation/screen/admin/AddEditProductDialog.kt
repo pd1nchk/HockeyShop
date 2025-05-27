@@ -33,6 +33,9 @@ import com.podolyanchik.hockeyshop.R
 import com.podolyanchik.hockeyshop.domain.model.Category
 import com.podolyanchik.hockeyshop.domain.model.Product
 import androidx.compose.foundation.layout.Row
+import com.podolyanchik.hockeyshop.util.ImageUtil
+import java.net.URLEncoder
+import java.nio.charset.StandardCharsets
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -87,7 +90,7 @@ fun AddEditProductDialog(
                 OutlinedTextField(
                     value = productName,
                     onValueChange = { productName = it },
-                    label = { Text("Product Name") },
+                    label = { Text(stringResource(R.string.product_name)) },
                     modifier = Modifier.fillMaxWidth(),
                     singleLine = true
                 )
@@ -97,7 +100,7 @@ fun AddEditProductDialog(
                 OutlinedTextField(
                     value = productDescription,
                     onValueChange = { productDescription = it },
-                    label = { Text("Description") },
+                    label = { Text(stringResource(R.string.product_description)) },
                     modifier = Modifier.fillMaxWidth(),
                     minLines = 3,
                     maxLines = 5
@@ -108,7 +111,7 @@ fun AddEditProductDialog(
                 OutlinedTextField(
                     value = productPrice,
                     onValueChange = { productPrice = it },
-                    label = { Text("Price ($)") },
+                    label = { Text(stringResource(R.string.product_price)) },
                     modifier = Modifier.fillMaxWidth(),
                     singleLine = true,
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal)
@@ -119,7 +122,7 @@ fun AddEditProductDialog(
                 OutlinedTextField(
                     value = productQuantity,
                     onValueChange = { productQuantity = it },
-                    label = { Text("Quantity") },
+                    label = { Text(stringResource(R.string.product_quantity)) },
                     modifier = Modifier.fillMaxWidth(),
                     singleLine = true,
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
@@ -130,7 +133,7 @@ fun AddEditProductDialog(
                 OutlinedTextField(
                     value = productDiscount,
                     onValueChange = { productDiscount = it },
-                    label = { Text("Discount (%)") },
+                    label = { Text(stringResource(R.string.product_discount)) },
                     modifier = Modifier.fillMaxWidth(),
                     singleLine = true,
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal)
@@ -140,56 +143,51 @@ fun AddEditProductDialog(
                 
                 OutlinedTextField(
                     value = productImageUrl,
-                    onValueChange = { productImageUrl = it },
-                    label = { Text("Image URL") },
+                    onValueChange = { 
+                        // Убираем префикс @ если пользователь его добавил
+                        val cleanUrl = if (it.startsWith("@")) it.substring(1) else it
+                        productImageUrl = cleanUrl
+                    },
+                    label = { Text(stringResource(R.string.product_image_url)) },
                     modifier = Modifier.fillMaxWidth(),
-                    singleLine = true
+                    singleLine = true,
+                    supportingText = { Text(stringResource(R.string.image_url_hint)) }
                 )
                 
                 Spacer(modifier = Modifier.height(16.dp))
                 
                 // Category dropdown
-                if (categories.isNotEmpty()) {
-                    ExposedDropdownMenuBox(
+                ExposedDropdownMenuBox(
+                    expanded = expanded,
+                    onExpandedChange = { expanded = it },
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    OutlinedTextField(
+                        readOnly = true,
+                        value = selectedCategory?.name ?: stringResource(R.string.select_category),
+                        onValueChange = { },
+                        label = { Text(stringResource(R.string.product_category)) },
+                        trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
+                        modifier = Modifier
+                            .menuAnchor()
+                            .fillMaxWidth()
+                    )
+                    
+                    ExposedDropdownMenu(
                         expanded = expanded,
-                        onExpandedChange = { expanded = !expanded },
+                        onDismissRequest = { expanded = false },
                         modifier = Modifier.fillMaxWidth()
                     ) {
-                        OutlinedTextField(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .menuAnchor(),
-                            readOnly = true,
-                            value = selectedCategory?.name ?: "-",
-                            onValueChange = {},
-                            label = { Text("Category") },
-                            trailingIcon = {
-                                ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded)
-                            },
-                            colors = ExposedDropdownMenuDefaults.outlinedTextFieldColors()
-                        )
-                        
-                        ExposedDropdownMenu(
-                            expanded = expanded,
-                            onDismissRequest = { expanded = false }
-                        ) {
-                            categories.forEach { category ->
-                                DropdownMenuItem(
-                                    text = { Text(category.name) },
-                                    onClick = {
-                                        selectedCategory = category
-                                        expanded = false
-                                    }
-                                )
-                            }
+                        categories.forEach { category ->
+                            DropdownMenuItem(
+                                text = { Text(category.name) },
+                                onClick = {
+                                    selectedCategory = category
+                                    expanded = false
+                                }
+                            )
                         }
                     }
-                } else {
-                    Text(
-                        text = "No categories available",
-                        color = MaterialTheme.colorScheme.error,
-                        modifier = Modifier.padding(vertical = 8.dp)
-                    )
                 }
                 
                 Spacer(modifier = Modifier.height(16.dp))
@@ -203,7 +201,7 @@ fun AddEditProductDialog(
                         checked = isPopular,
                         onCheckedChange = { isPopular = it }
                     )
-                    Text("Popular Product")
+                    Text(stringResource(R.string.product_popular))
                 }
                 
                 Row(
@@ -214,19 +212,22 @@ fun AddEditProductDialog(
                         checked = isNew,
                         onCheckedChange = { isNew = it }
                     )
-                    Text("New Product")
+                    Text(stringResource(R.string.product_new))
                 }
             }
         },
         confirmButton = {
             TextButton(
                 onClick = {
+                    // Обрабатываем URL перед сохранением
+                    val processedImageUrl = ImageUtil.normalizeImageUrl(productImageUrl)
+                    
                     onConfirm(
                         product?.id ?: "",
                         productName,
                         productDescription,
                         productPrice.toDoubleOrNull() ?: 0.0,
-                        productImageUrl,
+                        processedImageUrl,
                         selectedCategory?.id.toString(),
                         productQuantity.toIntOrNull() ?: 0,
                         productDiscount.toFloatOrNull() ?: 0f,

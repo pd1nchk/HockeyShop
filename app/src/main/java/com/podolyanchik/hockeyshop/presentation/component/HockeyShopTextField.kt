@@ -1,6 +1,9 @@
 package com.podolyanchik.hockeyshop.presentation.component
 
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -31,9 +34,9 @@ fun HockeyShopTextField(
     leadingIcon: ImageVector? = null,
     trailingIcon: ImageVector? = null,
     onTrailingIconClick: (() -> Unit)? = null,
+    isPassword: Boolean = false,
     isError: Boolean = false,
     errorMessage: String? = null,
-    isPassword: Boolean = false,
     keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
     keyboardActions: KeyboardActions = KeyboardActions.Default,
     enabled: Boolean = true,

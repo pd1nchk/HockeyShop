@@ -15,6 +15,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.History
 import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -41,6 +42,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Dialog
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.podolyanchik.hockeyshop.R
@@ -49,7 +51,10 @@ import com.podolyanchik.hockeyshop.presentation.component.CartItemRow
 import com.podolyanchik.hockeyshop.presentation.component.ErrorDialog
 import com.podolyanchik.hockeyshop.presentation.component.HockeyShopButton
 import com.podolyanchik.hockeyshop.presentation.viewmodel.CartViewModel
+import com.podolyanchik.hockeyshop.presentation.viewmodel.OrderViewModel
+import com.podolyanchik.hockeyshop.presentation.viewmodel.ProfileViewModel
 import com.podolyanchik.hockeyshop.presentation.viewmodel.SharedCartViewModel
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.rememberCoroutineScope
@@ -60,23 +65,58 @@ import kotlinx.coroutines.launch
 fun CartScreen(
     onNavigateToHome: () -> Unit,
     onNavigateToCheckout: () -> Unit,
-    viewModel: SharedCartViewModel = hiltViewModel()
+    onNavigateToProfile: () -> Unit,
+    onNavigateToOrders: () -> Unit,
+    viewModel: SharedCartViewModel = hiltViewModel(),
+    profileViewModel: ProfileViewModel = hiltViewModel(),
+    orderViewModel: OrderViewModel = hiltViewModel()
 ) {
     val cartItems by viewModel.cartItems.collectAsStateWithLifecycle()
     val totalPrice by viewModel.totalPrice.collectAsStateWithLifecycle()
     val isLoading by remember { mutableStateOf(false) }
     var error by remember { mutableStateOf<String?>(null) }
+    val currentUser by profileViewModel.currentUser.collectAsStateWithLifecycle()
     
     var showErrorDialog by remember { mutableStateOf(false) }
+    var showProfileDataMissingDialog by remember { mutableStateOf(false) }
     
     // Add SnackbarHostState and coroutineScope
     val snackbarHostState = remember { SnackbarHostState() }
     val coroutineScope = rememberCoroutineScope()
     
+    // Get string resource ahead of time for use in coroutine
+    val orderPlacedSuccessMessage = stringResource(R.string.order_success_message)
+    
     LaunchedEffect(error) {
         if (error != null) {
             showErrorDialog = true
         }
+    }
+    
+    // Profile data missing dialog
+    if (showProfileDataMissingDialog) {
+        AlertDialog(
+            onDismissRequest = { showProfileDataMissingDialog = false },
+            title = { Text(text = stringResource(R.string.profile_incomplete_title)) },
+            text = { Text(text = stringResource(R.string.profile_incomplete_message)) },
+            confirmButton = {
+                HockeyShopButton(
+                    text = stringResource(R.string.go_to_profile),
+                    onClick = {
+                        showProfileDataMissingDialog = false
+                        onNavigateToProfile()
+                    }
+                )
+            },
+            dismissButton = {
+                HockeyShopButton(
+                    text = stringResource(R.string.cancel),
+                    onClick = { showProfileDataMissingDialog = false },
+                    containerColor = MaterialTheme.colorScheme.secondaryContainer,
+                    contentColor = MaterialTheme.colorScheme.onSecondaryContainer
+                )
+            }
+        )
     }
     
     Scaffold(
@@ -91,10 +131,19 @@ fun CartScreen(
                         )
                     }
                 },
+                actions = {
+                    IconButton(onClick = onNavigateToOrders) {
+                        Icon(
+                            imageVector = Icons.Default.History,
+                            contentDescription = stringResource(R.string.order_history)
+                        )
+                    }
+                },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = MaterialTheme.colorScheme.primary,
                     titleContentColor = MaterialTheme.colorScheme.onPrimary,
-                    navigationIconContentColor = MaterialTheme.colorScheme.onPrimary
+                    navigationIconContentColor = MaterialTheme.colorScheme.onPrimary,
+                    actionIconContentColor = MaterialTheme.colorScheme.onPrimary
                 )
             )
         },
@@ -193,7 +242,7 @@ fun CartScreen(
                             modifier = Modifier.padding(16.dp)
                         ) {
                             Text(
-                                text = "Order Summary",
+                                text = stringResource(R.string.order_summary),
                                 style = MaterialTheme.typography.titleLarge,
                                 fontWeight = FontWeight.Bold
                             )
@@ -205,7 +254,7 @@ fun CartScreen(
                                 horizontalArrangement = Arrangement.SpaceBetween
                             ) {
                                 Text(
-                                    text = "Subtotal",
+                                    text = stringResource(R.string.subtotal),
                                     style = MaterialTheme.typography.bodyLarge
                                 )
                                 Text(
@@ -225,7 +274,7 @@ fun CartScreen(
                                 horizontalArrangement = Arrangement.SpaceBetween
                             ) {
                                 Text(
-                                    text = "Shipping",
+                                    text = stringResource(R.string.shipping),
                                     style = MaterialTheme.typography.bodyLarge
                                 )
                                 Text(
@@ -243,7 +292,7 @@ fun CartScreen(
                                 horizontalArrangement = Arrangement.SpaceBetween
                             ) {
                                 Text(
-                                    text = "Total",
+                                    text = stringResource(R.string.total),
                                     style = MaterialTheme.typography.titleMedium,
                                     fontWeight = FontWeight.Bold
                                 )
@@ -260,16 +309,39 @@ fun CartScreen(
                             HockeyShopButton(
                                 text = stringResource(R.string.proceed_to_checkout),
                                 onClick = {
-                                    // Clear the cart
-                                    viewModel.clearCart()
+                                    // Check if user profile has address and payment method
+                                    val isAddressFilled = !currentUser?.address.isNullOrBlank()
+                                    val isPaymentMethodFilled = !currentUser?.paymentMethod.isNullOrBlank()
                                     
-                                    // Show success message
-                                    coroutineScope.launch {
-                                        snackbarHostState.showSnackbar("Order completed!")
+                                    if (isAddressFilled && isPaymentMethodFilled) {
+                                        // Create order
+                                        currentUser?.let { user ->
+                                            orderViewModel.createOrderFromCart(
+                                                cartItems = cartItems,
+                                                currentUser = user,
+                                                shippingCost = shippingFee
+                                            )
+                                            
+                                            // Decrease product stock
+                                            for ((product, quantity) in cartItems) {
+                                                viewModel.decreaseProductStock(product.id, quantity)
+                                            }
+                                            
+                                            // Clear the cart
+                                            viewModel.clearCart()
+                                            
+                                            // Show success message
+                                            coroutineScope.launch {
+                                                snackbarHostState.showSnackbar(orderPlacedSuccessMessage)
+                                            }
+                                            
+                                            // Navigate to checkout
+                                            onNavigateToCheckout()
+                                        }
+                                    } else {
+                                        // Show dialog to fill profile
+                                        showProfileDataMissingDialog = true
                                     }
-                                    
-                                    // Navigate to checkout
-                                    onNavigateToCheckout()
                                 },
                                 modifier = Modifier.fillMaxWidth()
                             )
