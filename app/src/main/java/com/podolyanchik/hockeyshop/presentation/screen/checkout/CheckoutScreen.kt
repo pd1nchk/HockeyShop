@@ -23,7 +23,7 @@ fun CheckoutScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(text = "Order Confirmation") },
+                title = { Text(text = stringResource(R.string.order_success)) },
                 navigationIcon = {
                     IconButton(onClick = onNavigateToHome) {
                         Icon(
@@ -58,7 +58,7 @@ fun CheckoutScreen(
             Spacer(modifier = Modifier.height(24.dp))
             
             Text(
-                text = "Order Completed!",
+                text = stringResource(R.string.order_success),
                 style = MaterialTheme.typography.headlineMedium,
                 fontWeight = FontWeight.Bold,
                 textAlign = TextAlign.Center
@@ -67,7 +67,7 @@ fun CheckoutScreen(
             Spacer(modifier = Modifier.height(16.dp))
             
             Text(
-                text = "Thank you for your purchase. Your order has been received and is now being processed.",
+                text = stringResource(R.string.order_success_message),
                 style = MaterialTheme.typography.bodyLarge,
                 textAlign = TextAlign.Center
             )
@@ -75,7 +75,7 @@ fun CheckoutScreen(
             Spacer(modifier = Modifier.height(32.dp))
             
             HockeyShopButton(
-                text = "Return to Home",
+                text = stringResource(R.string.home),
                 onClick = onNavigateToHome,
                 modifier = Modifier.fillMaxWidth(0.7f)
             )

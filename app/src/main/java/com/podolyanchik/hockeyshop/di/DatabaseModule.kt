@@ -20,7 +20,9 @@ object DatabaseModule {
             app,
             HockeyShopDatabase::class.java,
             HockeyShopDatabase.DATABASE_NAME
-        ).build()
+        )
+        .fallbackToDestructiveMigration()
+        .build()
     }
     
     @Provides

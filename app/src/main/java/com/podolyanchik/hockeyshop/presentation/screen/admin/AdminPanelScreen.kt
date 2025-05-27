@@ -17,10 +17,14 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -66,6 +70,8 @@ import kotlinx.coroutines.launch
 fun AdminPanelScreen(
     onNavigateBack: () -> Unit,
     onNavigateToProductDetail: (String) -> Unit = {},
+    onNavigateToProfile: () -> Unit = {},
+    onNavigateToOrders: () -> Unit = {},
     viewModel: HomeViewModel = hiltViewModel()
 ) {
     val productsState by viewModel.productsState.collectAsStateWithLifecycle()
@@ -127,13 +133,30 @@ fun AdminPanelScreen(
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = MaterialTheme.colorScheme.primary,
                     titleContentColor = MaterialTheme.colorScheme.onPrimary,
-                    navigationIconContentColor = MaterialTheme.colorScheme.onPrimary
+                    navigationIconContentColor = MaterialTheme.colorScheme.onPrimary,
+                    actionIconContentColor = MaterialTheme.colorScheme.onPrimary
                 ),
                 navigationIcon = {
                     IconButton(onClick = onNavigateBack) {
                         Icon(
                             imageVector = Icons.Default.ArrowBack,
                             contentDescription = stringResource(R.string.back)
+                        )
+                    }
+                },
+                actions = {
+                    // Add orders button
+                    IconButton(onClick = onNavigateToOrders) {
+                        Icon(
+                            imageVector = Icons.Default.ShoppingCart,
+                            contentDescription = stringResource(R.string.all_orders)
+                        )
+                    }
+                    // Add profile settings button
+                    IconButton(onClick = onNavigateToProfile) {
+                        Icon(
+                            imageVector = Icons.Default.AccountCircle,
+                            contentDescription = stringResource(R.string.profile)
                         )
                     }
                 }

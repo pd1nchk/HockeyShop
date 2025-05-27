@@ -6,16 +6,33 @@ import com.podolyanchik.hockeyshop.util.Resource
 import kotlinx.coroutines.flow.Flow
 
 interface OrderRepository {
+    /**
+     * Create a new order
+     */
+    suspend fun createOrder(order: Order): Resource<Order>
     
-    fun getUserOrders(): Flow<List<Order>>
+    /**
+     * Get orders by user ID
+     */
+    suspend fun getOrdersByUserId(userId: String): Flow<Resource<List<Order>>>
     
-    fun getAllOrders(): Flow<List<Order>>
+    /**
+     * Get orders by status
+     */
+    suspend fun getOrdersByStatus(status: OrderStatus): Flow<Resource<List<Order>>>
     
-    fun getOrderDetails(orderId: String): Flow<Order?>
+    /**
+     * Get order by ID
+     */
+    suspend fun getOrderById(id: String): Flow<Resource<Order>>
     
-    suspend fun placeOrder(deliveryAddress: String, paymentMethod: String): Resource<Order>
+    /**
+     * Get all orders
+     */
+    suspend fun getAllOrders(): Flow<Resource<List<Order>>>
     
-    suspend fun updateOrderStatus(orderId: String, status: OrderStatus): Resource<Unit>
-    
-    suspend fun cancelOrder(orderId: String): Resource<Unit>
+    /**
+     * Update order status
+     */
+    suspend fun updateOrderStatus(orderId: String, status: OrderStatus): Resource<Order>
 } 

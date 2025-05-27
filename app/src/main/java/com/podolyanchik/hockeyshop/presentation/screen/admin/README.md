@@ -1,5 +1,5 @@
 # Admin Panel Implementation
-
+ы
 ## Overview
 
 The admin panel provides store administrators with the ability to manage products in the Hockey Shop application.

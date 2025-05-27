@@ -1,14 +1,17 @@
 package com.podolyanchik.hockeyshop.di
 
 import com.podolyanchik.hockeyshop.data.repository.CategoryRepositoryImpl
+import com.podolyanchik.hockeyshop.data.repository.OrderRepositoryImpl
 import com.podolyanchik.hockeyshop.data.repository.ProductRepositoryImpl
 import com.podolyanchik.hockeyshop.data.repository.UserRepositoryImpl
 import com.podolyanchik.hockeyshop.domain.repository.CategoryRepository
+import com.podolyanchik.hockeyshop.domain.repository.OrderRepository
 import com.podolyanchik.hockeyshop.domain.repository.ProductRepository
 import com.podolyanchik.hockeyshop.domain.repository.UserRepository
 import com.podolyanchik.hockeyshop.data.repository.CartRepositoryImpl
 import com.podolyanchik.hockeyshop.domain.repository.CartRepository
 import com.podolyanchik.hockeyshop.data.local.dao.CartDao
+import com.podolyanchik.hockeyshop.data.local.dao.ProductDao
 import com.podolyanchik.hockeyshop.data.local.dao.UserDao
 import dagger.Binds
 import dagger.Module
@@ -39,6 +42,12 @@ abstract class BindRepositoryModule {
     abstract fun bindCategoryRepository(
         categoryRepositoryImpl: CategoryRepositoryImpl
     ): CategoryRepository
+    
+    @Binds
+    @Singleton
+    abstract fun bindOrderRepository(
+        orderRepositoryImpl: OrderRepositoryImpl
+    ): OrderRepository
 }
 
 // This module uses @Provides for repositories that need more complex initialization
@@ -50,8 +59,9 @@ object ProvideRepositoryModule {
     @Singleton
     fun provideCartRepository(
         cartDao: CartDao,
-        userDao: UserDao
+        userDao: UserDao,
+        productDao: ProductDao
     ): CartRepository {
-        return CartRepositoryImpl(cartDao, userDao)
+        return CartRepositoryImpl(cartDao, userDao, productDao)
     }
 } 

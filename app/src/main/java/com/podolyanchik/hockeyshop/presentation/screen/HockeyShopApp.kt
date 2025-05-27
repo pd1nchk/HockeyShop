@@ -20,6 +20,9 @@ import com.podolyanchik.hockeyshop.presentation.viewmodel.AuthViewModel
 import com.podolyanchik.hockeyshop.presentation.screen.admin.AdminPanelScreen
 import com.podolyanchik.hockeyshop.presentation.screen.cart.CartScreen
 import com.podolyanchik.hockeyshop.presentation.screen.checkout.CheckoutScreen
+import com.podolyanchik.hockeyshop.presentation.screen.orders.OrdersScreen
+import com.podolyanchik.hockeyshop.presentation.screen.orders.OrderDetailScreen
+import com.podolyanchik.hockeyshop.presentation.screen.admin.AdminOrdersScreen
 import com.podolyanchik.hockeyshop.presentation.screen.profile.ProfileScreen
 
 sealed class Screen(val route: String) {
@@ -38,6 +41,7 @@ sealed class Screen(val route: String) {
         fun createRoute(orderId: String) = "order_detail/$orderId"
     }
     object AdminPanel : Screen("admin_panel")
+    object AdminOrders : Screen("admin_orders")
 }
 
 @Composable
@@ -135,17 +139,6 @@ fun HockeyShopApp(
             )
         }
         
-        composable(Screen.AdminPanel.route) {
-            AdminPanelScreen(
-                onNavigateBack = {
-                    navController.popBackStack()
-                },
-                onNavigateToProductDetail = { productId ->
-                    navController.navigate(Screen.ProductDetail.createRoute(productId))
-                }
-            )
-        }
-        
         composable(Screen.Cart.route) {
             CartScreen(
                 onNavigateToHome = {
@@ -153,6 +146,12 @@ fun HockeyShopApp(
                 },
                 onNavigateToCheckout = {
                     navController.navigate(Screen.Checkout.route)
+                },
+                onNavigateToProfile = {
+                    navController.navigate(Screen.Profile.route)
+                },
+                onNavigateToOrders = {
+                    navController.navigate(Screen.Orders.route)
                 }
             )
         }
@@ -177,6 +176,62 @@ fun HockeyShopApp(
                     navController.navigate(Screen.Login.route) {
                         popUpTo(Screen.Profile.route) { inclusive = true }
                     }
+                }
+            )
+        }
+        
+        composable(Screen.Orders.route) {
+            OrdersScreen(
+                onNavigateBack = {
+                    navController.popBackStack()
+                },
+                onNavigateToOrderDetail = { orderId ->
+                    navController.navigate(Screen.OrderDetail.createRoute(orderId))
+                }
+            )
+        }
+        
+        composable(
+            route = Screen.OrderDetail.route,
+            arguments = listOf(
+                navArgument("orderId") {
+                    type = NavType.StringType
+                }
+            )
+        ) { backStackEntry ->
+            val orderId = backStackEntry.arguments?.getString("orderId") ?: ""
+            OrderDetailScreen(
+                orderId = orderId,
+                onNavigateBack = {
+                    navController.popBackStack()
+                }
+            )
+        }
+        
+        composable(Screen.AdminPanel.route) {
+            AdminPanelScreen(
+                onNavigateBack = {
+                    navController.popBackStack()
+                },
+                onNavigateToProductDetail = { productId ->
+                    navController.navigate(Screen.ProductDetail.createRoute(productId))
+                },
+                onNavigateToProfile = {
+                    navController.navigate(Screen.Profile.route)
+                },
+                onNavigateToOrders = {
+                    navController.navigate(Screen.AdminOrders.route)
+                }
+            )
+        }
+        
+        composable(Screen.AdminOrders.route) {
+            AdminOrdersScreen(
+                onNavigateBack = {
+                    navController.popBackStack()
+                },
+                onNavigateToOrderDetail = { orderId ->
+                    navController.navigate(Screen.OrderDetail.createRoute(orderId))
                 }
             )
         }

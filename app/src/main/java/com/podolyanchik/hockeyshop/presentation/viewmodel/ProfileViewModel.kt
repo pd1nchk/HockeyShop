@@ -23,6 +23,10 @@ class ProfileViewModel @Inject constructor(
 
     private val _updateState = MutableStateFlow<Resource<User>>(Resource.Initial())
     val updateState: StateFlow<Resource<User>> = _updateState.asStateFlow()
+    
+    // Состояние для смены пароля
+    private val _passwordChangeState = MutableStateFlow<Resource<Unit>>(Resource.Initial())
+    val passwordChangeState: StateFlow<Resource<Unit>> = _passwordChangeState.asStateFlow()
 
     init {
         loadCurrentUser()
@@ -60,6 +64,26 @@ class ProfileViewModel @Inject constructor(
 
             _updateState.value = result
         }
+    }
+    
+    // Функция для изменения пароля
+    fun changePassword(currentPassword: String, newPassword: String) {
+        viewModelScope.launch {
+            _passwordChangeState.value = Resource.Loading()
+            
+            if (newPassword.length < 6) {
+                _passwordChangeState.value = Resource.Error("Пароль должен содержать не менее 6 символов")
+                return@launch
+            }
+            
+            val result = userRepository.updateUserPassword(currentPassword, newPassword)
+            _passwordChangeState.value = result
+        }
+    }
+    
+    // Сбросить состояние изменения пароля
+    fun resetPasswordChangeState() {
+        _passwordChangeState.value = Resource.Initial()
     }
 
     fun resetState() {
