@@ -37,3 +37,5 @@ A modern Android application for browsing and purchasing hockey equipment.
 
 ## License
 MIT License
+
+<!-- update commit -->
