@@ -44,11 +44,5 @@
 - JDK 11 or higher
 - Android SDK API 21+
 
----
-
-## 📄 License
-
-MIT License
-
 <!-- update commit -->
 
